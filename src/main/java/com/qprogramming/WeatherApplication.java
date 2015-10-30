@@ -1,11 +1,13 @@
 package com.qprogramming;
 
 import com.qprogramming.health.TemplateHealthCheck;
+import com.qprogramming.resources.IndexResource;
 import com.qprogramming.resources.StartResource;
 
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.dropwizard.views.ViewBundle;
 
 public class WeatherApplication extends Application<WeatherConfiguration> {
 
@@ -20,16 +22,16 @@ public class WeatherApplication extends Application<WeatherConfiguration> {
 
 	@Override
 	public void initialize(final Bootstrap<WeatherConfiguration> bootstrap) {
-		// TODO: application initialization
+		bootstrap.addBundle(new ViewBundle<WeatherConfiguration>());
 	}
 
 	@Override
 	public void run(final WeatherConfiguration configuration, final Environment environment) {
 		// TODO: implement application
-	    final TemplateHealthCheck healthCheck =
-	            new TemplateHealthCheck(configuration.getTemplate());
+		final TemplateHealthCheck healthCheck = new TemplateHealthCheck(configuration.getTemplate());
 		environment.healthChecks().register("template", healthCheck);
 		environment.jersey().register(new StartResource());
+		environment.jersey().register(new IndexResource());
 	}
 
 }
