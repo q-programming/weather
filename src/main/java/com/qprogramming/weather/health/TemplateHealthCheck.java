@@ -1,4 +1,4 @@
-package com.qprogramming.health;
+package com.qprogramming.weather.health;
 
 import com.codahale.metrics.health.HealthCheck;
 

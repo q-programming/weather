@@ -1,4 +1,4 @@
-package com.qprogramming;
+package com.qprogramming.weather;
 
 import io.dropwizard.Configuration;
 import com.google.common.collect.ImmutableMap;

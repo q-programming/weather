@@ -11,6 +11,8 @@ import javax.ws.rs.core.Response;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.qprogramming.weather.resources.StartResource;
+
 import io.dropwizard.testing.junit.ResourceTestRule;
 
 public class StartResourceTest {

@@ -1,8 +1,8 @@
-package com.qprogramming;
+package com.qprogramming.weather;
 
-import com.qprogramming.health.TemplateHealthCheck;
-import com.qprogramming.resources.IndexResource;
-import com.qprogramming.resources.StartResource;
+import com.qprogramming.weather.health.TemplateHealthCheck;
+import com.qprogramming.weather.resources.IndexResource;
+import com.qprogramming.weather.resources.StartResource;
 
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;

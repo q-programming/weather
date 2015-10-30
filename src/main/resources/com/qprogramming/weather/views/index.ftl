@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="" type="com.qprogramming.views.IndexView" -->
+<#-- @ftlvariable name="" type="com.qprogramming.weather.views.IndexView" -->
 <html>
     <body>
         <h1>Hello</h1>

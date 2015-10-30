@@ -1,4 +1,4 @@
-package com.qprogramming.resources;
+package com.qprogramming.weather.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
