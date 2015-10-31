@@ -6,13 +6,12 @@ import javax.persistence.Entity;
 
 import org.reflections.Reflections;
 
+import com.qprogramming.weather.api.MeterApi;
 import com.qprogramming.weather.core.Meter;
-import com.qprogramming.weather.core.Values;
 import com.qprogramming.weather.db.MeterDAO;
 import com.qprogramming.weather.db.ValuesDAO;
 import com.qprogramming.weather.health.TemplateHealthCheck;
 import com.qprogramming.weather.resources.IndexResource;
-import com.qprogramming.weather.resources.MeterResource;
 import com.qprogramming.weather.resources.StartResource;
 
 import io.dropwizard.Application;
@@ -32,12 +31,11 @@ public class WeatherApplication extends Application<WeatherConfiguration> {
 	public String getName() {
 		return "weather";
 	}
-	
-	
+
 	private Class[] getEntities() {
-	    final Reflections reflections = new Reflections("com.qprogramming.weather.core");
-	    final Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Entity.class);
-	    return classes.toArray(new Class[classes.size()]);
+		final Reflections reflections = new Reflections("com.qprogramming.weather.core");
+		final Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Entity.class);
+		return classes.toArray(new Class[classes.size()]);
 	}
 
 	private final HibernateBundle<WeatherConfiguration> hibernate = new HibernateBundle<WeatherConfiguration>(
@@ -62,7 +60,7 @@ public class WeatherApplication extends Application<WeatherConfiguration> {
 		environment.healthChecks().register("template", healthCheck);
 		environment.jersey().register(new StartResource());
 		environment.jersey().register(new IndexResource());
-		environment.jersey().register(new MeterResource(dao, vDao));
+		environment.jersey().register(new MeterApi(dao, vDao));
 	}
 
 }

@@ -1,4 +1,9 @@
-package com.qprogramming.weather.resources;
+/**
+ * REST api for accessing meter and it's value
+ *  @author Jakub Romaniszun
+ *  @date 01.11.2019
+ */
+package com.qprogramming.weather.api;
 
 import java.util.List;
 import java.util.Random;
@@ -21,24 +26,37 @@ import com.qprogramming.weather.db.ValuesDAO;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.LongParam;
 
-@Path("/meter")
+@Path("/api/meter")
 @Produces(MediaType.APPLICATION_JSON)
-public class MeterResource {
+public class MeterApi {
 
 	private final MeterDAO meterDao;
 	private final ValuesDAO valuesDao;
 
-	public MeterResource(MeterDAO meterDAO, ValuesDAO vDao) {
-		this.meterDao = meterDAO;
-		this.valuesDao = vDao;
+	public MeterApi(MeterDAO meterDao, ValuesDAO valuesDao) {
+		this.meterDao = meterDao;
+		this.valuesDao = valuesDao;
 	}
 
+	/**
+	 * Get json object of meter
+	 * 
+	 * @param meterId
+	 * @return
+	 */
 	@Path("{meterId}")
 	@GET
 	@UnitOfWork
 	public Meter getMeter(@PathParam("meterId") LongParam meterId) {
 		return findSafely(meterId.get());
 	}
+
+	/**
+	 * Returns all values from meter with given meterId
+	 * 
+	 * @param meterId
+	 * @return
+	 */
 	@Path("{meterId}/values")
 	@GET
 	@UnitOfWork
@@ -46,6 +64,12 @@ public class MeterResource {
 		return valuesDao.findByMeter(meterId.get());
 	}
 
+	/**
+	 * Creates some random data for given meter
+	 * 
+	 * @param meterId
+	 * @return
+	 */
 	@Path("/createDummy/{meterId}")
 	@GET
 	@UnitOfWork
@@ -63,6 +87,12 @@ public class MeterResource {
 		return meterDao.create(meter);
 	}
 
+	/**
+	 * Searches for meter, if not found , throw exception
+	 * 
+	 * @param personId
+	 * @return
+	 */
 	private Meter findSafely(long personId) {
 		final Optional<Meter> meter = meterDao.findById(personId);
 		if (!meter.isPresent()) {
@@ -71,8 +101,6 @@ public class MeterResource {
 		return meter.get();
 	}
 
-	
-	
 	private float generate(float min, float max) {
 		return min + new Random().nextFloat() * (max - min);
 	}
