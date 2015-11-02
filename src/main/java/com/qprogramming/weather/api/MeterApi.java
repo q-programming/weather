@@ -13,6 +13,7 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.joda.time.DateTime;
@@ -60,8 +61,14 @@ public class MeterApi {
 	@Path("{meterId}/values")
 	@GET
 	@UnitOfWork
-	public List<Values> getMeterMetrics(@PathParam("meterId") LongParam meterId) {
-		return valuesDao.findByMeter(meterId.get());
+	public List<Values> getMeterMetrics(@PathParam("meterId") LongParam meterId, @QueryParam("from") String date_from,
+			@QueryParam("to") String date_to) {
+		if (date_from != null && date_to != null) {
+			DateTime from = Values.formatter.parseDateTime(date_from);
+			DateTime to = Values.formatter.parseDateTime(date_to);
+			return valuesDao.findByMeterAndDate(meterId.get(), from, to);
+		} else
+			return valuesDao.findByMeter(meterId.get());
 	}
 
 	/**
@@ -75,14 +82,13 @@ public class MeterApi {
 	@UnitOfWork
 	public Meter createValues(@PathParam("meterId") LongParam meterId) {
 		Meter meter = findSafely(meterId.get());
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 30; i++) {
 			Values value = new Values();
 			value.setMeter(meter);
-			value.setTemp(generate(10F, 15F));
-			value.setHumidity(generate(40.23F, 60.5F));
-			value.setPressure(generate(990F, 1100F));
-			DateTime date = new DateTime().minusDays(i);
-			value.setTimestamp(date.toDate());
+			value.setTemp(generateFloat(10F, 15F));
+			value.setHumidity(generateFloat(40.23F, 60.5F));
+			value.setPressure(generateFloat(990F, 1100F));
+			value.setTimestamp(new DateTime().minusDays(generateInt(0, 30)));
 			valuesDao.create(value);
 		}
 		return meterDao.create(meter);
@@ -102,8 +108,12 @@ public class MeterApi {
 		return meter.get();
 	}
 
-	private float generate(float min, float max) {
+	private float generateFloat(float min, float max) {
 		return min + new Random().nextFloat() * (max - min);
+	}
+
+	private int generateInt(int min, int max) {
+		return new Random().nextInt((max - min) + 1) + min;
 	}
 
 }

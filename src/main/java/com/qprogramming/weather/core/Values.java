@@ -1,7 +1,5 @@
 package com.qprogramming.weather.core;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,21 +12,22 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 @Entity
 @Table(name = "metrics")
 @NamedQueries({
-    @NamedQuery(
-            name = "com.qprogramming.weather.core.Values.findByMeter",
-            query = "FROM Values v WHERE v.meter LIKE :meter"
-    )
-})
+		@NamedQuery(name = "com.qprogramming.weather.core.Values.findByMeter", query = "FROM Values v WHERE v.meter LIKE :meter"),
+		@NamedQuery(name = "com.qprogramming.weather.core.Values.findByMeterAndDate", query = "FROM Values v WHERE v.meter LIKE :meter AND v.timestamp >= :date_from AND v.timestamp <= :date_to") })
 public class Values {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	@Column(name = "timestamp", nullable = false)
-	private Date timestamp;
+	private DateTime timestamp;
 	@Column(name = "temp", nullable = false)
 	private Float temp;
 	@Column(name = "humidity", nullable = false)
@@ -39,6 +38,8 @@ public class Values {
 	@JoinColumn(name = "meter")
 	private Meter meter;
 
+	public static DateTimeFormatter formatter = DateTimeFormat.forPattern("dd-MM-yyyy");
+
 	public long getId() {
 		return id;
 	}
@@ -47,11 +48,15 @@ public class Values {
 		this.id = id;
 	}
 
-	public Date getTimestamp() {
+	public DateTime getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(Date timestamp) {
+	public String getDate() {
+		return formatter.print(timestamp);
+	}
+
+	public void setTimestamp(DateTime timestamp) {
 		this.timestamp = timestamp;
 	}
 

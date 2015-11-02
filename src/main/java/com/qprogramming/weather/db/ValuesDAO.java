@@ -3,6 +3,7 @@ package com.qprogramming.weather.db;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
+import org.joda.time.DateTime;
 
 import com.google.common.base.Optional;
 import com.qprogramming.weather.core.Values;
@@ -25,6 +26,11 @@ public class ValuesDAO extends AbstractDAO<Values> {
 
 	public List<Values> findByMeter(long meterId) {
 		return list(namedQuery("com.qprogramming.weather.core.Values.findByMeter").setLong("meter", meterId));
+	}
+
+	public List<Values> findByMeterAndDate(long meterId, DateTime date_from, DateTime date_to) {
+		return list(namedQuery("com.qprogramming.weather.core.Values.findByMeterAndDate").setLong("meter", meterId)
+				.setParameter("date_from", date_from).setParameter("date_to", date_to));
 	}
 
 	// TODO Auto-generated constructor stub
