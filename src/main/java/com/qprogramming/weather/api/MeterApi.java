@@ -80,8 +80,9 @@ public class MeterApi {
 			value.setMeter(meter);
 			value.setTemp(generate(10F, 15F));
 			value.setHumidity(generate(40.23F, 60.5F));
-			value.setPressure(generate(2000F, 2100F));
-			value.setTimestamp(new DateTime().toDate());
+			value.setPressure(generate(990F, 1100F));
+			DateTime date = new DateTime().minusDays(i);
+			value.setTimestamp(date.toDate());
 			valuesDao.create(value);
 		}
 		return meterDao.create(meter);
