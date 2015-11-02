@@ -15,6 +15,7 @@ import com.qprogramming.weather.resources.IndexResource;
 import com.qprogramming.weather.resources.StartResource;
 
 import io.dropwizard.Application;
+import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.setup.Bootstrap;
@@ -50,6 +51,8 @@ public class WeatherApplication extends Application<WeatherConfiguration> {
 	public void initialize(final Bootstrap<WeatherConfiguration> bootstrap) {
 		bootstrap.addBundle(new ViewBundle<WeatherConfiguration>());
 		bootstrap.addBundle(hibernate);
+		bootstrap.addBundle(new AssetsBundle("/com/qprogramming/weather/assets/css", "/css", null, "css"));
+		bootstrap.addBundle(new AssetsBundle("/com/qprogramming/weather/assets/js", "/js", null, "js"));
 	}
 
 	@Override
