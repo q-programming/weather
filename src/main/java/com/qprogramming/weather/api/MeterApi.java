@@ -5,8 +5,12 @@
  */
 package com.qprogramming.weather.api;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
@@ -61,14 +65,54 @@ public class MeterApi {
 	@Path("{meterId}/values")
 	@GET
 	@UnitOfWork
-	public List<Values> getMeterMetrics(@PathParam("meterId") LongParam meterId, @QueryParam("from") String date_from,
+	public MeterData getMeterData(@PathParam("meterId") LongParam meterId, @QueryParam("from") String date_from,
 			@QueryParam("to") String date_to) {
+		List<Values> result = getValues(meterId, date_from, date_to);
+		///TODO remove after random data eliminated
+		result = eliminateDuplicates(result);
+		MeterData data = new MeterData(result.size());
+		for (int i = 0; i < result.size(); i++) {
+			Values value = result.get(i);
+			data.setHumidity(i, value.getTimestamp().getMillis(), roundFloatDecimals(value.getHumidity()));
+			data.setTemperature(i, value.getTimestamp().getMillis(), roundFloatDecimals(value.getTemp()));
+			data.setPressure(i, value.getTimestamp().getMillis(), roundFloatDecimals(value.getPressure()));
+		}
+		return data;
+	}
+
+	private List<Values> eliminateDuplicates(List<Values> result) {
+		List<Values> clean = new ArrayList<Values>();
+		Set<String> lookup = new HashSet<String>();
+		for (Values value : result) {
+			if (lookup.add(value.getDate())) {
+				clean.add(value);
+			}
+		}
+		return clean;
+	}
+
+	private double roundFloatDecimals(Float number) {
+		return (double) Math.round(number * 100) / 100;
+	}
+
+	private List<Values> getValues(LongParam meterId, String date_from, String date_to) {
+		List<Values> result = new LinkedList<>();
 		if (date_from != null && date_to != null) {
 			DateTime from = Values.formatter.parseDateTime(date_from);
 			DateTime to = Values.formatter.parseDateTime(date_to);
-			return valuesDao.findByMeterAndDate(meterId.get(), from, to);
-		} else
-			return valuesDao.findByMeter(meterId.get());
+			result = valuesDao.findByMeterAndDate(meterId.get(), from, to);
+		} else {
+			result = valuesDao.findByMeter(meterId.get());
+		}
+		return result;
+	}
+
+	@Path("{meterId}/valuesOBJ")
+	@GET
+	@UnitOfWork
+	public List<Values> getMeterMetricsObjects(@PathParam("meterId") LongParam meterId,
+			@QueryParam("from") String date_from, @QueryParam("to") String date_to) {
+		return getValues(meterId, date_from, date_to);
 	}
 
 	/**

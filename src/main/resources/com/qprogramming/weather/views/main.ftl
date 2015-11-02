@@ -30,6 +30,7 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 
 </head>
 <body>
@@ -56,6 +57,8 @@
 				</a>
 					<ul class="dropdown-menu dropdown-tasks">
 						<li><a href="#"> Task 1 </a></li>
+						<li><a href="#"> Task 2 </a></li>
+						<li><a href="#"> Task 3 </a></li>
 						<li class="divider"></li>
 						<li><a class="text-center" href="#"> <strong>See
 									All Tasks</strong> <i class="fa fa-angle-right"></i>
@@ -146,9 +149,9 @@
 	<!-- /#wrapper -->
 
 	<!-- jQuery -->
-	<script
-		src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
 	<!-- Bootstrap Core JavaScript -->
+	<script src="http://code.highcharts.com/highcharts.js"></script>
 	<script
 		src="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
 	<!-- Metis Menu Plugin JavaScript -->

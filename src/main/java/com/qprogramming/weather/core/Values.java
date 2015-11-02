@@ -19,8 +19,8 @@ import org.joda.time.format.DateTimeFormatter;
 @Entity
 @Table(name = "metrics")
 @NamedQueries({
-		@NamedQuery(name = "com.qprogramming.weather.core.Values.findByMeter", query = "FROM Values v WHERE v.meter LIKE :meter"),
-		@NamedQuery(name = "com.qprogramming.weather.core.Values.findByMeterAndDate", query = "FROM Values v WHERE v.meter LIKE :meter AND v.timestamp >= :date_from AND v.timestamp <= :date_to") })
+		@NamedQuery(name = "com.qprogramming.weather.core.Values.findByMeter", query = "FROM Values v WHERE v.meter LIKE :meter ORDER BY v.timestamp ASC"),
+		@NamedQuery(name = "com.qprogramming.weather.core.Values.findByMeterAndDate", query = "FROM Values v WHERE v.meter LIKE :meter AND v.timestamp >= :date_from AND v.timestamp <= :date_to ORDER BY v.timestamp ASC") })
 public class Values {
 
 	@Id
