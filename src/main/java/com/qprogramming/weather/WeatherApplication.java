@@ -18,6 +18,8 @@ import com.qprogramming.weather.db.ValuesDAO;
 import com.qprogramming.weather.health.TemplateHealthCheck;
 import com.qprogramming.weather.resources.IndexResource;
 import com.qprogramming.weather.resources.StartResource;
+import com.xeiam.dropwizard.sundial.SundialBundle;
+import com.xeiam.dropwizard.sundial.SundialConfiguration;
 
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
@@ -61,6 +63,12 @@ public class WeatherApplication extends Application<WeatherConfiguration> {
 		bootstrap.addBundle(hibernate);
 		bootstrap.addBundle(new AssetsBundle("/com/qprogramming/weather/assets/css", "/css", null, "css"));
 		bootstrap.addBundle(new AssetsBundle("/com/qprogramming/weather/assets/js", "/js", null, "js"));
+		bootstrap.addBundle(new SundialBundle<WeatherConfiguration>() {
+			@Override
+			public SundialConfiguration getSundialConfiguration(WeatherConfiguration configuration) {
+				return configuration.getSundialConfiguration();
+			}
+		});
 	}
 
 	@Override
@@ -80,6 +88,7 @@ public class WeatherApplication extends Application<WeatherConfiguration> {
 						.buildAuthFilter()));
 		environment.jersey().register(new AuthValueFactoryProvider.Binder<>(User.class));
 		environment.jersey().register(RolesAllowedDynamicFeature.class);
+		environment.getApplicationContext().setAttribute("dataFile", configuration.getDataFile());
 	}
 
 }

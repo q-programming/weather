@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableMap;
+import com.xeiam.dropwizard.sundial.SundialConfiguration;
 
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
@@ -27,6 +28,18 @@ public class WeatherConfiguration extends Configuration {
 	@Valid
 	@NotNull
 	private DataSourceFactory database = new DataSourceFactory();
+
+	@Valid
+	@NotNull
+	public SundialConfiguration sundialConfiguration = new SundialConfiguration();
+	
+	@JsonProperty("dataFile")
+	private String dataFile;
+
+	@JsonProperty("sundial")
+	public SundialConfiguration getSundialConfiguration() {
+		return sundialConfiguration;
+	}
 
 	@JsonProperty("database")
 	public DataSourceFactory getDataSourceFactory() {
@@ -70,5 +83,13 @@ public class WeatherConfiguration extends Configuration {
 			builder.put(entry.getKey(), ImmutableMap.copyOf(entry.getValue()));
 		}
 		this.viewRendererConfiguration = builder.build();
+	}
+
+	public String getDataFile() {
+		return dataFile;
+	}
+
+	public void setDataFile(String dataFile) {
+		this.dataFile = dataFile;
 	}
 }
