@@ -7,6 +7,9 @@ import javax.persistence.Entity;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.reflections.Reflections;
 
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.qprogramming.weather.api.MeterApi;
 import com.qprogramming.weather.auth.ApppAuthenticator;
 import com.qprogramming.weather.auth.AppAuthorizer;
@@ -34,6 +37,14 @@ import io.dropwizard.views.ViewBundle;
 
 public class WeatherApplication extends Application<WeatherConfiguration> {
 
+	private final HibernateBundle<WeatherConfiguration> hibernate = new HibernateBundle<WeatherConfiguration>(
+			Meter.class, getEntities()) {
+		@Override
+		public DataSourceFactory getDataSourceFactory(WeatherConfiguration configuration) {
+			return configuration.getDataSourceFactory();
+		}
+	};
+
 	public static void main(final String[] args) throws Exception {
 		new WeatherApplication().run(args);
 	}
@@ -49,13 +60,9 @@ public class WeatherApplication extends Application<WeatherConfiguration> {
 		return classes.toArray(new Class[classes.size()]);
 	}
 
-	private final HibernateBundle<WeatherConfiguration> hibernate = new HibernateBundle<WeatherConfiguration>(
-			Meter.class, getEntities()) {
-		@Override
-		public DataSourceFactory getDataSourceFactory(WeatherConfiguration configuration) {
-			return configuration.getDataSourceFactory();
-		}
-	};
+	public HibernateBundle<WeatherConfiguration> getHibernate() {
+		return hibernate;
+	}
 
 	@Override
 	public void initialize(final Bootstrap<WeatherConfiguration> bootstrap) {
@@ -73,14 +80,17 @@ public class WeatherApplication extends Application<WeatherConfiguration> {
 
 	@Override
 	public void run(final WeatherConfiguration configuration, final Environment environment) {
-		final MeterDAO dao = new MeterDAO(hibernate.getSessionFactory());
-		final ValuesDAO vDao = new ValuesDAO(hibernate.getSessionFactory());
+		Injector injector = createInjector(configuration, environment);
+		final MeterDAO dao = injector.getInstance(MeterDAO.class);
+		// new MeterDAO(hibernate.getSessionFactory());
+		final ValuesDAO vDao = injector.getInstance(ValuesDAO.class);
 		final UserDAO uDao = new UserDAO(hibernate.getSessionFactory());
 		final TemplateHealthCheck healthCheck = new TemplateHealthCheck(configuration.getTemplate());
 		environment.healthChecks().register("template", healthCheck);
 		environment.jersey().register(new StartResource());
 		environment.jersey().register(new IndexResource());
 		environment.jersey().register(new MeterApi(dao, vDao));
+
 		environment.jersey()
 				.register(new AuthDynamicFeature(new BasicCredentialAuthFilter.Builder<User>()
 						.setAuthenticator(new ApppAuthenticator(uDao, hibernate.getSessionFactory()))
@@ -89,6 +99,25 @@ public class WeatherApplication extends Application<WeatherConfiguration> {
 		environment.jersey().register(new AuthValueFactoryProvider.Binder<>(User.class));
 		environment.jersey().register(RolesAllowedDynamicFeature.class);
 		environment.getApplicationContext().setAttribute("dataFile", configuration.getDataFile());
+
+	}
+
+	private Injector createInjector(final WeatherConfiguration conf, final Environment envioroment) {
+		return Guice.createInjector(new AbstractModule() {
+			@Override
+			protected void configure() {
+				bind(WeatherConfiguration.class).toInstance(conf);
+				bind(HibernateBundle.class).toInstance(getHibernate());
+				// if someone
+				// would
+				// like to
+				// @Inject
+				// ExampleServiceConfiguration
+				// bind(MessagesConfiguration.class).toInstance(conf.getMessages());
+				// // for ExampleResource, which does @Inject
+				// MessagesConfiguration
+			}
+		});
 	}
 
 }

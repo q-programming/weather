@@ -6,14 +6,18 @@ import org.hibernate.SessionFactory;
 import org.joda.time.DateTime;
 
 import com.google.common.base.Optional;
+import com.google.inject.Inject;
+import com.qprogramming.weather.WeatherConfiguration;
 import com.qprogramming.weather.core.Values;
 
 import io.dropwizard.hibernate.AbstractDAO;
+import io.dropwizard.hibernate.HibernateBundle;
 
 public class ValuesDAO extends AbstractDAO<Values> {
 
-	public ValuesDAO(SessionFactory sessionFactory) {
-		super(sessionFactory);
+	@Inject
+	public ValuesDAO(HibernateBundle<WeatherConfiguration> hibernate) {
+		super(hibernate.getSessionFactory());
 	}
 
 	public Optional<Values> findById(Long id) {

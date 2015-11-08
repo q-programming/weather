@@ -6,6 +6,7 @@
 package com.qprogramming.weather.api;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.joda.time.DateTime;
 import com.google.common.base.Optional;
 import com.qprogramming.weather.core.Meter;
 import com.qprogramming.weather.core.Values;
+import com.qprogramming.weather.core.sorters.ValuesSorter;
 import com.qprogramming.weather.db.MeterDAO;
 import com.qprogramming.weather.db.ValuesDAO;
 
@@ -68,11 +70,13 @@ public class MeterApi {
 	public MeterData getMeterData(@PathParam("meterId") LongParam meterId, @QueryParam("from") String date_from,
 			@QueryParam("to") String date_to) {
 		List<Values> result = getValues(meterId, date_from, date_to);
-		///TODO remove after random data eliminated
+		/// TODO remove after random data eliminated
 		result = eliminateDuplicates(result);
 		MeterData data = new MeterData(result.size());
 		for (int i = 0; i < result.size(); i++) {
 			Values value = result.get(i);
+			System.out.println(value.getTimestamp().getMillis() + ";" + value.getTemp() + ";" + value.getHumidity()
+					+ ";" + value.getPressure());
 			data.setHumidity(i, value.getTimestamp().getMillis(), roundFloatDecimals(value.getHumidity()));
 			data.setTemperature(i, value.getTimestamp().getMillis(), roundFloatDecimals(value.getTemp()));
 			data.setPressure(i, value.getTimestamp().getMillis(), roundFloatDecimals(value.getPressure()));
@@ -88,6 +92,7 @@ public class MeterApi {
 				clean.add(value);
 			}
 		}
+		Collections.sort(clean, new ValuesSorter(false));
 		return clean;
 	}
 
